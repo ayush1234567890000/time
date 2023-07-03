@@ -1,0 +1,215 @@
+<html>
+<head>
+    <title>Playing With Time By Ayush</title>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+    <style>
+*
+{
+	font-size:40px;
+}
+        body {
+            font-family: Arial, sans-serif;
+        }
+
+        #time-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .location-card {
+            margin: 10px;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            width: 200px;
+            text-align: center;
+        }
+        body {
+            font-family: Arial, sans-serif;
+            background-color: lavender;
+            color: teal;
+        }
+        
+        #stopwatch {
+            font-size: 115%;
+            text-align: center;
+            color: teal;
+        }
+        
+        #controls {
+            text-align: center;
+            margin-top: 10px;
+        }
+        
+        #controls button {
+	    size:40px;
+            font-size: 16px;
+            margin: 5px;
+        }
+    </style>
+</head>
+<body>
+<center>
+
+    <div id="datetime">
+        <h1 id="day"></h1>
+        <h2 id="date"></h2>
+        <h2 id="time"></h2>
+    </div>
+    
+    <div id="stopwatch">
+	<center>
+        <table>
+            <tr>
+                <th>Hours</th>
+                <th>Minutes</th>
+                <th>Seconds</th>
+                <th>Milliseconds</th>
+            </tr>
+            <tr>
+                <td id="hours">00</td>
+                <td id="minutes">00</td>
+                <td id="seconds">00</td>
+                <td id="milliseconds">000</td>
+            </tr>
+        </table>
+	<center>
+    </div>
+    
+    <div id="controls">
+        <button onclick="startStopwatch()">Start</button>
+        <button onclick="stopStopwatch()">Stop</button>
+        <button onclick="resetStopwatch()">Reset</button>
+    </div>
+    
+    <script>
+        // Function to display the current time, day, and date
+        function displayDateTime() {
+            var now = new Date();
+            var time = now.toLocaleTimeString();
+            var day = now.toLocaleDateString('en-US', { weekday: 'long' });
+            var date = now.toLocaleDateString();
+            
+            document.getElementById('time').innerHTML = time;
+            document.getElementById('day').innerHTML = day;
+            document.getElementById('date').innerHTML = date;
+            
+            setTimeout(displayDateTime, 1000); // Update every second
+        }
+        
+        // Function to start the stopwatch
+        function startStopwatch() {
+            if (!stopwatchRunning) {
+                stopwatchRunning = true;
+                stopwatchInterval = setInterval(updateStopwatch, 10); // Update every millisecond
+            }
+        }
+        
+        // Function to stop the stopwatch
+        function stopStopwatch() {
+            if (stopwatchRunning) {
+                stopwatchRunning = false;
+                clearInterval(stopwatchInterval);
+            }
+        }
+        
+        // Function to reset the stopwatch
+        function resetStopwatch() {
+            stopwatchRunning = false;
+            clearInterval(stopwatchInterval);
+            stopwatchHours = 0;
+            stopwatchMinutes = 0;
+            stopwatchSeconds = 0;
+            stopwatchMilliseconds = 000;
+	    location.reload();
+            updateStopwatch();
+        }
+        
+        // Function to update the stopwatch display
+        function updateStopwatch() {
+            stopwatchMilliseconds += 10;
+            
+            if (stopwatchMilliseconds === 1000) {
+                stopwatchMilliseconds = 0;
+                stopwatchSeconds++;
+            }
+            
+            if (stopwatchSeconds === 60) {
+                stopwatchSeconds = 0;
+                stopwatchMinutes++;
+            }
+            
+            if (stopwatchMinutes === 60) {
+                stopwatchMinutes = 0;
+                stopwatchHours++;
+            }
+            
+            document.getElementById('hours').innerHTML = padZero(stopwatchHours);
+            document.getElementById('minutes').innerHTML = padZero(stopwatchMinutes);
+            document.getElementById('seconds').innerHTML = padZero(stopwatchSeconds);
+            document.getElementById('milliseconds').innerHTML = padZero(stopwatchMilliseconds, 3);
+        }
+        
+        // Function to pad zeros to the stopwatch values
+        function padZero(value, length = 2) {
+            return String(value).padStart(length, '0');
+        }
+        
+        var stopwatchRunning = false;
+        var stopwatchInterval;
+        var stopwatchHours = 0;
+        var stopwatchMinutes = 0;
+        var stopwatchSeconds = 0;
+        var stopwatchMilliseconds = 000;
+        
+        displayDateTime(); 
+    </script>
+
+    <h1>World Time</h1>
+
+    <div>
+        <label for="country-select">Select a country:</label>
+        <select id="country-select">
+            <option value="America/New_York">New York</option>
+            <option value="Europe/London">London</option>
+            <option value="Asia/Tokyo">Tokyo</option>
+            <option value="Australia/Sydney">Sydney</option>
+            <!-- Add more options for other countries -->
+        </select>
+        <button id="show-time-button">Show Time</button>
+    </div>
+
+	  <div id="time-container"></div>
+
+    <script>
+        // Function to fetch the current time for a given timezone
+        function getTime(timezone) {
+            var currentdate = new Date();
+            var options = { timeZone: timezone, timeStyle: 'medium' };
+            return currentdate.toLocaleTimeString('en-US', options);
+        }
+
+        // Function to display the time in the selected location
+        function showTime() {
+            var selectedTimezone = $('#country-select').val();
+            var currentTime = getTime(selectedTimezone);
+            var locationName = $("#country-select option:selected").text();
+
+            var locationCard = '<div class="location-card"><h2>' + locationName + '</h2><p>' + currentTime + '</p></div>';
+            $('#time-container').append(locationCard);
+        }
+
+        // Event listener for the button click
+        $('#show-time-button').click(function() {
+            showTime();
+        });
+    </script>
+
+
+</center>
+</body>
+</html>
